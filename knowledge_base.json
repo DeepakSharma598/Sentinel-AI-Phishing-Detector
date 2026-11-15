@@ -1,0 +1,233 @@
+[
+  {
+    "id": "mitre-t1566-001",
+    "title": "MITRE ATT&CK T1566.001 - Spearphishing Link",
+    "category": "attack_technique",
+    "mitre_id": "T1566.001",
+    "tags": ["phishing", "spearphishing", "url", "link", "deception", "mitre", "credential-harvesting"],
+    "summary": "Adversaries send targeted emails, messages, or communications containing deceptive hyperlinks designed to redirect victims to malicious infrastructure or credential harvesters.",
+    "content": "MITRE ATT&CK Technique T1566.001 (Spearphishing Link) involves adversaries delivering targeted messages containing hyperlinks pointing to attacker-controlled infrastructure. The landing page typically mimics legitimate enterprise portals (such as Microsoft 365, Google Workspace, or banking services) to harvest authentication credentials, session tokens, or prompt malicious downloads. Evasion tactics commonly include URL shortening, open redirects on trusted domains, hex/IP address encoding, lookalike domain registration (typosquatting), and internationalized domain name (IDN) homoglyphs. Detection relies on lexical URL analysis, domain age inspection, TLS certificate telemetry, and real-time lexical reputation scoring.",
+    "mitigation": "Deploy Secure Email Gateways (SEGs) with link rewriting and time-of-click analysis; enforce multi-factor authentication (MFA), preferably FIDO2/WebAuthn phishing-resistant keys; maintain active DNS sinkholing; inspect newly registered domains (<30 days old).",
+    "references": ["https://attack.mitre.org/techniques/T1566/001/", "NIST SP 800-61 Rev. 2"]
+  },
+  {
+    "id": "mitre-t1566-002",
+    "title": "MITRE ATT&CK T1566.002 - Spearphishing Attachment",
+    "category": "attack_technique",
+    "mitre_id": "T1566.002",
+    "tags": ["phishing", "attachment", "malware", "macro", "pdf", "svg", "html", "iso", "mitre"],
+    "summary": "Adversaries deliver malicious files and attachments such as weaponized PDFs, HTML smuggling files, or disk images to execute code on endpoint systems.",
+    "content": "In T1566.002, adversaries attach weaponized files directly to messages. Attack vectors include weaponized Office documents with VBA macros, malicious PDF files exploiting reader vulnerabilities, HTML smuggling attachments (where JavaScript dynamically reconstructs a payload locally in the browser to evade perimeter inspection), and password-protected archives containing LNK shortcuts or ISO/VHD images. Once the user opens the attachment, initial execution (T1204.002) occurs, facilitating command and control beaconing or credential theft.",
+    "mitigation": "Disable Office macros via Group Policy; block inbound archives with executable or disk image extensions (.iso, .vhd, .exe, .scr); deploy automated sandbox detonations for email attachments; implement strict Endpoint Detection and Response (EDR).",
+    "references": ["https://attack.mitre.org/techniques/T1566/002/"]
+  },
+  {
+    "id": "mitre-t1598-002",
+    "title": "MITRE ATT&CK T1598.002 - Spearphishing for Information: Credential Harvesting",
+    "category": "attack_technique",
+    "mitre_id": "T1598.002",
+    "tags": ["credentials", "harvesting", "login", "password", "stealer", "portal", "mitre"],
+    "summary": "Adversaries deploy high-fidelity replica login portals to harvest victim usernames, passwords, phone numbers, and two-factor authentication codes.",
+    "content": "Technique T1598.002 describes the collection of user credentials via deceptive web portals. Threat actors clone authentication interfaces belonging to critical cloud services, corporate intranets, or financial providers. When victims input credentials, the malicious site logs keystrokes or forwards the credentials via webhook/Telegram bot/C2 server, while often simultaneously redirecting the victim back to the genuine website to delay discovery.",
+    "mitigation": "Implement phishing-resistant WebAuthn/FIDO2 hardware security keys; deploy enterprise password managers that refuse auto-fill on spoofed domains; enforce Conditional Access policies based on device health, trusted IP ranges, and compliance status.",
+    "references": ["https://attack.mitre.org/techniques/T1598/002/"]
+  },
+  {
+    "id": "mitre-t1204-001",
+    "title": "MITRE ATT&CK T1204.001 - User Execution: Malicious Links",
+    "category": "attack_technique",
+    "mitre_id": "T1204.001",
+    "tags": ["execution", "user-click", "drive-by", "social-engineering", "mitre"],
+    "summary": "Adversaries rely on social engineering psychological levers to compel users into clicking malicious links.",
+    "content": "Technique T1204.001 relies on user action to trigger malicious code or access adversary-controlled web resources. Attackers leverage psychological triggers—such as urgency ('Account suspended in 24 hours'), fear ('Unauthorized transaction detected'), curiosity ('Confidential payroll increase'), or compliance requests—to manipulate victims into bypassing cognitive security cautions and clicking hyperlinks.",
+    "mitigation": "Conduct continuous, contextual phishing awareness training; utilize browser isolation technologies; deploy automated browser extensions that warn users about unverified or anomalous domains.",
+    "references": ["https://attack.mitre.org/techniques/T1204/001/"]
+  },
+  {
+    "id": "mitre-t1556",
+    "title": "MITRE ATT&CK T1556 - Modify Authentication Process: Adversary-in-the-Middle (AiTM)",
+    "category": "attack_technique",
+    "mitre_id": "T1556",
+    "tags": ["aitm", "reverse-proxy", "mfa-bypass", "session-hijacking", "evilproxy", "modlishka"],
+    "summary": "Adversaries deploy reverse proxies (EvilProxy, Modlishka) between the user and authentic authentication servers to intercept credentials and session cookies in real time.",
+    "content": "Adversary-in-the-Middle (AiTM) phishing proxies transparently relay HTTP traffic between the victim and the legitimate login service (such as Microsoft Entra ID or Google). Because the proxy communicates directly with the real server, the victim receives authentic multi-factor authentication (MFA) prompts (SMS, push, or TOTP). Once the victim completes MFA, the proxy intercepts the resulting session cookie / bearer token and stores it. The attacker can then inject this session token into their own browser, completely bypassing passwords and standard MFA without alerting the victim.",
+    "mitigation": "Adopt FIDO2/WebAuthn hardware tokens (YubiKeys) or passkeys, which bind cryptographic authentication directly to the legitimate domain origin, rendering reverse proxy interception impossible; enforce short-lived session tokens and continuous access evaluation (CAE).",
+    "references": ["https://attack.mitre.org/techniques/T1556/", "CISA Alert AA22-216A"]
+  },
+  {
+    "id": "quishing-evasion",
+    "title": "Quishing (QR Code Phishing) & Security Gateway Evasion",
+    "category": "evasion_tactic",
+    "mitre_id": "T1566.001",
+    "tags": ["quishing", "qr", "qr-code", "mobile", "seg-evasion", "opencv", "image"],
+    "summary": "Threat actors embed malicious phishing URLs into Quick Response (QR) codes inside email bodies, PDF invoices, or physical locations to bypass email perimeter filters.",
+    "content": "Quishing leverages optical barcodes (QR codes) containing encoded URLs. Because legacy Secure Email Gateways (SEGs) primarily parse textual bodies and simple hyperlinks, image-embedded QR codes frequently pass through undetected without optical character recognition (OCR) or computer vision decoding. Once delivered, attackers direct victims to scan the QR code using their personal smartphone, shifting the transaction from corporate-monitored workstations to unmanaged mobile devices lacking enterprise endpoint protections, DNS filtering, or network inspection.",
+    "mitigation": "Implement computer-vision and OCR scanning pipelines (such as OpenCV multi-pass decoding) at the email gateway; enforce Mobile Device Management (MDM) with DNS-layer threat protection on mobile devices; educate employees never to scan external QR codes for authentication or urgent updates.",
+    "references": ["FTC Consumer Alert: Scammers using QR Codes", "Sentinel-AI Quishing Defense Framework"]
+  },
+  {
+    "id": "typosquatting-mechanics",
+    "title": "Typosquatting & Algorithmic Domain Impersonation Mechanics",
+    "category": "evasion_tactic",
+    "mitre_id": "T1566.001",
+    "tags": ["typosquatting", "levenshtein", "omission", "insertion", "addition", "vowel-swap", "lookalike"],
+    "summary": "Threat actors register typographical variations of well-known brand names to catch typing errors or deceive users via visual similarity.",
+    "content": "Typosquatting exploits human typographic errors and cognitive visual illusions. Common algorithmic variations include: (1) Insertion (e.g. 'link3edin.com' or 'linkerdin.com'), (2) Addition ('linkedinapp.com', 'amazononline.com'), (3) Omission ('gogle.com' for 'google.com'), (4) Repetition ('linkeedin.com', 'gooogle.com'), (5) Vowel Swapping ('linkedan.com'), and (6) Neighboring Keyboard Hits ('w' for 'e'). When paired with valid SSL certificates (e.g. via Let's Encrypt), these domains present deceptive credibility to unsuspecting users.",
+    "mitigation": "Proactively monitor registrar feeds and certificate transparency (CT) logs using Levenshtein distance matching; pre-emptively register common defensive typo variants; leverage brand protection takedown services.",
+    "references": ["ICANN Typosquatting Guidelines", "Sentinel-AI Typosquat Generator Engine"]
+  },
+  {
+    "id": "combosquatting-mechanics",
+    "title": "Combosquatting & Social Engineering Keywords",
+    "category": "evasion_tactic",
+    "mitre_id": "T1566.001",
+    "tags": ["combosquatting", "keywords", "brand-abuse", "login", "verify", "security", "portal"],
+    "summary": "Combosquatting combines legitimate trademarked brand names with words related to security, verification, updates, or portals (e.g. paypal-verify.com).",
+    "content": "Unlike simple typosquatting, combosquatting creates domains that spell the target brand name correctly but concatenate it with deceptive security-related words, such as 'paypal-security.com', 'google-login-service.com', 'chase-verify-billing.net', or 'microsoft-account-portal.com'. Users frequently assume such compound domains represent official subsidiaries, security departments, or delegated support services of the brand.",
+    "mitigation": "Heuristic brand-plus-keyword detection engines; enterprise DNS blocking of synthetic compound domains; trademark enforcement via Uniform Domain-Name Dispute-Resolution Policy (UDRP).",
+    "references": ["Georgia Tech Combosquatting Research Paper", "USENIX Security"]
+  },
+  {
+    "id": "homoglyphs-punycode",
+    "title": "IDN Homoglyphs & Internationalized Domain Spoofing (Punycode)",
+    "category": "evasion_tactic",
+    "mitre_id": "T1566.001",
+    "tags": ["homoglyph", "punycode", "idn", "unicode", "cyrillic", "greek", "spoofing"],
+    "summary": "Adversaries exploit Internationalized Domain Names (IDNs) by substituting Latin characters with visually identical characters from other alphabets (Cyrillic, Greek).",
+    "content": "Internationalized Domain Names allow non-ASCII scripts in web addresses, encoded using the Punycode prefix 'xn--'. Attackers exploit homoglyphs—characters from different alphabets that appear identical or nearly identical in common fonts. For example, the Cyrillic 'а' (U+0430) looks identical to Latin 'a' (U+0061). A domain such as 'pаypal.com' (with Cyrillic 'а') resolves internally to 'xn--pypal-4ve.com', creating an almost undetectable visual forgery in address bars that do not display raw Punycode.",
+    "mitigation": "Configure web browsers and security proxies to always display the raw Punycode 'xn--' prefix for mixed-script or high-risk IDNs; monitor Certificate Transparency logs for Punycode certificates containing protected brand keywords.",
+    "references": ["Unicode Technical Report #36: Unicode Security Considerations"]
+  },
+  {
+    "id": "leetspeak-evasion",
+    "title": "Leetspeak Character Substitution & Normalization Defense",
+    "category": "evasion_tactic",
+    "mitre_id": "T1566.001",
+    "tags": ["leetspeak", "substitutions", "go0ogle", "paypa1", "normalization", "heuristics"],
+    "summary": "Attackers substitute letters with visually similar numbers and symbols (0 for o, 1 for l, 3 for e, 5 for s, @ for a) to bypass basic blacklist filters.",
+    "content": "Leetspeak is an alphanumeric obfuscation technique where letters are replaced by numerals or symbols sharing structural visual characteristics. Common examples include 'go0ogle.com' (replacing 'o' with zero '0'), 'paypa1.com' (replacing 'l' with numeral '1'), 'amaz0n.com', and 'link3edin.com'. Standard machine learning models trained only on alphabetical dictionary words often fail to detect these subtle mutations unless dedicated leetspeak normalization layers are executed prior to classification.",
+    "mitigation": "Apply deterministic algorithmic normalization mapping leetspeak characters to canonical alphabet letters prior to lexical model scoring and brand whitelist comparisons.",
+    "references": ["Sentinel-AI Leetspeak Normalization Engine"]
+  },
+  {
+    "id": "subdomain-spoofing",
+    "title": "Subdomain Deception & Multi-Tier FQDN Obfuscation",
+    "category": "evasion_tactic",
+    "mitre_id": "T1566.001",
+    "tags": ["subdomain", "fqdn", "obfuscation", "url-structure", "multi-tier"],
+    "summary": "Attackers prepend brand names as subdomains on attacker-controlled root domains (e.g., paypal.com.account-update.xyz).",
+    "content": "Subdomain deception exploits how human eyes read URLs from left to right. Threat actors purchase inexpensive generic domains (e.g. 'account-update-notice.com') and configure DNS records to add subdomains like 'paypal.com.account-update-notice.com' or 'google.com.verify-login.xyz'. On mobile screens or truncated address bars, users only see the beginning of the string ('paypal.com...') and mistakenly assume they are on the genuine website.",
+    "mitigation": "Educate users to identify the registrable root domain (the effective TLD + 1 label); use automated endpoint URL parsers that isolate and inspect the apex domain rather than subdomains.",
+    "references": ["RFC 3986 Uniform Resource Identifier", "Public Suffix List Guidelines"]
+  },
+  {
+    "id": "reverse-proxy-phishing-kits",
+    "title": "Modern Phishing Kits: EvilProxy, Modlishka, and Muraena",
+    "category": "threat_actor_tools",
+    "mitre_id": "T1556",
+    "tags": ["evilproxy", "modlishka", "muraena", "phishing-kit", "reverse-proxy", "phaas"],
+    "summary": "Turnkey Phishing-as-a-Service (PhaaS) platforms that automate reverse proxy setup, SSL certificate generation, and automated session cookie exfiltration.",
+    "content": "Modern cybercrime ecosystems have shifted toward Phishing-as-a-Service (PhaaS). Platforms like EvilProxy, Greatness, and Tycoon 2FA provide bulletproof reverse proxy infrastructure for monthly subscriptions. These kits automatically clone target interfaces in real-time, handle reverse SSL termination, defeat anti-bot and security scanners with CAPTCHA cloaking, and immediately dump captured session cookies (such as Microsoft ESTSAUTH or Google SID/HSID) into encrypted Telegram channels or C2 databases.",
+    "mitigation": "Mandate FIDO2/WebAuthn hardware security keys; restrict access via device compliance certificates; block known proxy hosting ASNs; enforce impossible travel conditional access alerts.",
+    "references": ["Microsoft Security Threat Intelligence: AiTM Phishing Analysis", "CISA Cybersecurity Advisory"]
+  },
+  {
+    "id": "brand-google",
+    "title": "Brand Threat Dossier: Google & Google Workspace Impersonation",
+    "category": "brand_profile",
+    "mitre_id": "T1566.001",
+    "tags": ["google", "workspace", "gmail", "drive", "docs", "brand-impersonation"],
+    "summary": "Analysis of phishing campaigns targeting Google accounts, Workspace enterprise environments, and Drive/Docs sharing links.",
+    "content": "Google is one of the most heavily targeted brands worldwide. Common phishing templates impersonate: (1) Google Drive 'Document Shared with You' notifications leading to fake login screens, (2) 'Critical Security Alert: Suspicious sign-in blocked' prompting immediate password verification, (3) Storage quota full warnings, and (4) Fake Google Meet/Calendar invites. Genuine Google domains include 'google.com', 'google.co.in', 'google.co.uk', 'google.ca', 'google.de', 'youtu.be', and 'youtube.com'. Any variations like 'go0ogle.com', 'google-login-verify.com', or 'drive-google.share-doc.com' are malicious spoofing attempts.",
+    "mitigation": "Verify domain matches official google.com host; utilize Google Titan security keys or built-in phone passkeys; enable Google Advanced Protection Program for high-risk accounts.",
+    "references": ["Google Cybersecurity Action Team Threat Horizon Report"]
+  },
+  {
+    "id": "brand-microsoft",
+    "title": "Brand Threat Dossier: Microsoft 365 & Entra ID Impersonation",
+    "category": "brand_profile",
+    "mitre_id": "T1566.001",
+    "tags": ["microsoft", "office365", "m365", "entra-id", "azure", "onedrive", "brand-impersonation"],
+    "summary": "Analysis of corporate credential harvesting attacks masquerading as Microsoft 365, Outlook Web Access, and OneDrive notifications.",
+    "content": "Microsoft 365 attacks represent the primary vector for corporate Business Email Compromise (BEC). Attackers distribute emails mimicking: (1) Quarantine release notifications ('You have 3 quarantined messages'), (2) Shared OneDrive/SharePoint proposals, (3) Password expiration notices, and (4) Microsoft Teams meeting notifications. Deceptive domains include 'office365-login.com', 'microsoft-update-sec.net', and 'outlook-web-verify.com'. Genuine domains include 'microsoft.com', 'office.com', 'live.com', and 'outlook.com'.",
+    "mitigation": "Deploy Microsoft Defender for Office 365 with Safe Links; require Entra ID Conditional Access with compliant device requirement; enforce FIDO2 authentication.",
+    "references": ["Microsoft Digital Defense Report"]
+  },
+  {
+    "id": "brand-paypal",
+    "title": "Brand Threat Dossier: PayPal & Financial Gateway Impersonation",
+    "category": "brand_profile",
+    "mitre_id": "T1566.001",
+    "tags": ["paypal", "financial", "payment", "invoice", "unauthorized-transaction", "brand-impersonation"],
+    "summary": "Threat patterns in PayPal spoofing, including fake invoice fraud, account limitation warnings, and unauthorized transaction disputes.",
+    "content": "PayPal phishing primarily aims to extract credit card numbers, bank account details, and full identity information (SSN, date of birth). Attack templates feature: (1) 'Unauthorized transaction of $849.99 processed - click here to dispute', (2) 'Your account has been temporarily limited', and (3) Fake invoice PDF lures. Common spoofed domains include 'paypa1.com', 'paypal-resolution-center.com', and 'service-paypal-verify.com'. Legitimate domains are strictly 'paypal.com' and 'paypal.me'.",
+    "mitigation": "Check the exact domain spelling in the address bar; never click dispute links in emails—navigate directly to paypal.com; set up instant SMS/push transaction notifications.",
+    "references": ["PayPal Security Center Guidelines", "Anti-Phishing Working Group (APWG)"]
+  },
+  {
+    "id": "brand-amazon",
+    "title": "Brand Threat Dossier: Amazon & E-Commerce Delivery Scams",
+    "category": "brand_profile",
+    "mitre_id": "T1566.001",
+    "tags": ["amazon", "ecommerce", "order", "delivery", "prime", "gift-card", "brand-impersonation"],
+    "summary": "Scams masquerading as Amazon order confirmations, Prime membership renewals, locked accounts, and delivery rescheduling alerts.",
+    "content": "Amazon-themed phishing spikes dramatically during shopping seasons (Prime Day, Black Friday, Q4 holidays). Lures claim expensive purchases (e.g. MacBook Pro, iPhone) were placed on the victim's account, urging them to click a link to cancel the order before shipment. The malicious link points to typosquats like 'amaz0n.com', 'amazon-order-cancel.com', or 'amazon-prime-billing.info', where login credentials and credit card information are collected.",
+    "mitigation": "Inspect sender address and domain; verify order status directly in official Amazon mobile app; enable MFA.",
+    "references": ["Amazon Customer Security Guidelines"]
+  },
+  {
+    "id": "brand-banking",
+    "title": "Brand Threat Dossier: Major Retail Banking (Chase, Wells Fargo, BofA, Citi)",
+    "category": "brand_profile",
+    "mitre_id": "T1566.001",
+    "tags": ["banking", "chase", "wellsfargo", "bankofamerica", "citibank", "fraud-alert", "smishing"],
+    "summary": "High-urgency smishing (SMS phishing) and email phishing campaigns impersonating banking fraud departments to capture online banking credentials and PINs.",
+    "content": "Banking impersonation relies on manufactured panic: 'Chase Fraud Alert: Was you who spent $1,250 at Walmart? If NO, click link immediately'. Victims are directed to pixel-perfect replicas of mobile banking login screens requesting username, password, debit card number, expiration date, CVV, and ATM PIN. Legitimate domains: 'chase.com', 'wellsfargo.com', 'bankofamerica.com', 'bofa.com', 'citibank.com', 'citi.com'.",
+    "mitigation": "Banks never send SMS links asking for login credentials or PINs; call the phone number printed on the back of the physical debit/credit card; enable push notification authentication.",
+    "references": ["FDIC Consumer Financial Protection Guidelines"]
+  },
+  {
+    "id": "ir-link-clicked",
+    "title": "Incident Response Playbook: Malicious Link Clicked (No Credentials Entered)",
+    "category": "incident_response",
+    "mitre_id": "T1204.001",
+    "tags": ["incident-response", "playbook", "link-clicked", "containment", "forensics"],
+    "summary": "Immediate containment and triage procedure when a user clicks a suspected phishing link but does not input credentials.",
+    "content": "When a suspicious link is clicked without credential entry: (1) Immediately close browser tabs and clear browser cache, cookies, and local storage. (2) Inspect network telemetry and proxy logs to verify whether drive-by downloads or malicious payloads (e.g., .iso, .exe, .scr, .msi) were downloaded. (3) Trigger an immediate EDR/antivirus full endpoint scan to detect automated browser exploits or memory-injected payloads. (4) Extract the full URL, domain, and IP address for SOC analysis. (5) Block the domain and IP across the enterprise perimeter firewall and DNS resolvers.",
+    "mitigation": "Immediate browser session cleanup; endpoint EDR sweep; enterprise DNS sinkholing; update threat intelligence feeds.",
+    "references": ["NIST Special Publication 800-61 Computer Security Incident Handling Guide"]
+  },
+  {
+    "id": "ir-credentials-submitted",
+    "title": "Incident Response Playbook: Credentials Submitted to Phishing Site",
+    "category": "incident_response",
+    "mitre_id": "T1598.002",
+    "tags": ["incident-response", "credentials-stolen", "compromise", "revocation", "playbook"],
+    "summary": "Critical, high-priority containment playbook for when a user submits credentials and/or MFA tokens to a malicious phishing site.",
+    "content": "Immediate containment protocol for confirmed credential submission: (1) INSTANT PASSWORD RESET: Change password for the affected account immediately from a known-clean device. (2) REVOKE ACTIVE SESSIONS: Force revocation of all active sessions and refresh tokens across cloud identity providers (e.g. Entra ID 'Revoke Sessions', Google Workspace 'Sign out all sessions') to kill intercepted session cookies. (3) AUDIT RECENT ACTIVITY: Review cloud sign-in logs, mailbox forwarding rules, registered MFA devices (check for rogue Authenticator apps), and OAuth application consent grants. (4) ISOLATE ENDPOINT: If malware download occurred, isolate endpoint from the corporate network. (5) NOTIFY SOC & INCIDENT COMMAND.",
+    "mitigation": "Forced session termination, global password reset, thorough audit of newly registered MFA methods and forwarding rules, threat intelligence feed update.",
+    "references": ["CISA Phishing Incident Response Playbook", "SANS Incident Handler's Handbook"]
+  },
+  {
+    "id": "defensive-fido2",
+    "title": "Defensive Architecture: Phishing-Resistant FIDO2/WebAuthn Authentication",
+    "category": "defensive_architecture",
+    "mitre_id": "T1556",
+    "tags": ["fido2", "webauthn", "passkeys", "phishing-resistant", "mfa", "hardware-token"],
+    "summary": "Why FIDO2 / WebAuthn hardware tokens and passkeys render credential harvesting and AiTM reverse proxy attacks completely ineffective.",
+    "content": "FIDO2 / WebAuthn cryptographic authentication eliminates shared secrets like passwords and SMS OTPs. During authentication, the user's browser cryptographically signs a challenge using a private key stored on the device or hardware token (e.g., YubiKey). Crucially, the browser binds the cryptographic signature to the exact fully qualified domain name (origin) in the address bar. If a user connects to a reverse proxy (e.g., 'paypa1.com' instead of 'paypal.com'), the browser signs the challenge for 'paypa1.com'. The genuine PayPal server rejects this signature as invalid. Thus, FIDO2 is mathematically immune to phishing.",
+    "mitigation": "Enforce FIDO2 security keys or device-bound passkeys as the mandatory primary MFA method across all enterprise administrative and user accounts.",
+    "references": ["FIDO Alliance Phishing-Resistant Authentication Whitepaper", "NIST SP 800-63B"]
+  },
+  {
+    "id": "takedown-procedure",
+    "title": "Domain Abuse Reporting & Threat Takedown Workflow",
+    "category": "incident_response",
+    "mitre_id": "T1566.001",
+    "tags": ["takedown", "abuse", "registrar", "google-safe-browsing", "apwg", "cisa"],
+    "summary": "Standard operating procedure for filing domain takedowns and warning blacklists against malicious phishing and typosquatted domains.",
+    "content": "To take down a malicious phishing domain: (1) Perform WHOIS and DNS lookup to identify the domain registrar, abuse contact email, and web host IP address. (2) Submit an urgent Domain Abuse Report to the registrar abuse desk (e.g. abuse@namecheap.com, abuse@godaddy.com) with forensic proof (screenshots, phishing URL, brand impersonation details). (3) Submit URL to Google Safe Browsing (safebrowsing.google.com/safebrowsing/report_phish/) and Microsoft Security Intelligence (microsoft.com/en-us/wdsi/support/report-unsafe-site). (4) Forward threat evidence to the Anti-Phishing Working Group (reportphishing@apwg.org) and CISA.",
+    "mitigation": "Automated abuse reporting pipelines; threat intelligence sharing with APWG and ISACs.",
+    "references": ["APWG Phishing Takedown Guidelines", "ICANN Registrar Abuse Contacts Directory"]
+  }
+]
