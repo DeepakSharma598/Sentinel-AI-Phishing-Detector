@@ -96,8 +96,6 @@
         initAnalyticsChart();
         initThreatCopilot();
 
-        // Load default domain view matching screenshot (linkedin.com)
-        loadTyposquats('linkedin.com');
     });
 
     // =========================================================================
