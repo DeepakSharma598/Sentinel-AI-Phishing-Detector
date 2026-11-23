@@ -1,14 +1,50 @@
 import os
+import sys
+import types
 import re
 import pickle
 import datetime
 import urllib.parse
 import numpy as np
 import cv2
-from flask import Flask, render_template, request, jsonify
-from rag import get_rag_engine
+from flask import Flask, render_template, request, jsonify, send_from_directory
 
-app = Flask(__name__)
+# Enable running in flat folder structure without modifying directory layout
+if 'rag' not in sys.modules:
+    try:
+        from rag import get_rag_engine
+    except ImportError:
+        _cur_dir = os.path.dirname(os.path.abspath(__file__))
+        _pkg = types.ModuleType('rag')
+        _pkg.__path__ = [_cur_dir]
+        _pkg_init = os.path.join(_cur_dir, '__init__.py')
+        _pkg.__file__ = _pkg_init
+        sys.modules['rag'] = _pkg
+        if os.path.exists(_pkg_init):
+            with open(_pkg_init, 'r', encoding='utf-8') as _f:
+                exec(compile(_f.read(), _pkg_init, 'exec'), _pkg.__dict__)
+        from rag import get_rag_engine
+
+# Support both flat directory structure and modular templates/static folders
+_template_dir = 'templates' if os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')) else '.'
+_static_dir = 'static' if os.path.isdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')) else '.'
+app = Flask(__name__, template_folder=_template_dir, static_folder=_static_dir, static_url_path='/static')
+
+# Static file fallback routing when running flat in root directory
+@app.route('/static/css/<path:filename>')
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    if os.path.isdir('static/css'):
+        return send_from_directory('static/css', filename)
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), os.path.basename(filename))
+
+@app.route('/static/js/<path:filename>')
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    if os.path.isdir('static/js'):
+        return send_from_directory('static/js', filename)
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), os.path.basename(filename))
+
 # Maximum upload size: 8 Megabytes
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024
 
