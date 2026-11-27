@@ -1,7 +1,7 @@
 """
 Sentinel-AI - RAG Semantic Retriever
 High-performance local vector retrieval using TF-IDF and hybrid keyword boosting.
-Runs 100% locally and offline without external vector database servers.
+Runs 100% locally and offline without external vector database servers ok ok.
 """
 
 import os
